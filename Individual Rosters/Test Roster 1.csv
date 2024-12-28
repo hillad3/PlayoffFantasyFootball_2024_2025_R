@@ -1,0 +1,15 @@
+"Fantasy Owner","Fantasy Owner Email","Fantasy Team Name","Automation Mapping","Roster","Position Type","Position Code","Position Group","Team Abbr.","Selection","Check 1 - Selection is Unique","Check 2 - Team is Unique"
+"TBD","das@gmail.com","TBD","00-0039750",1,"Player","K","SPEC","LA","K, LA: Joshua Karty (NFC West, ID: 00-0039750)",TRUE,TRUE
+"TBD","das@gmail.com","TBD","00-0037175",2,"Player","QB1","QB","ARI","QB, ARI: Anthony Brown (NFC West, ID: 00-0037175)",TRUE,TRUE
+"TBD","das@gmail.com","TBD","00-0029604",3,"Player","QB2","QB","ATL","QB, ATL: Kirk Cousins (NFC South, ID: 00-0029604)",TRUE,TRUE
+"TBD","das@gmail.com","TBD","00-0039163",4,"Player","QB3","QB","HOU","QB, HOU: C.J. Stroud (AFC South, ID: 00-0039163)",TRUE,TRUE
+"TBD","das@gmail.com","TBD","00-0038454",5,"Player","RB1","RB","BAL","RB, BAL: Keaton Mitchell (AFC North, ID: 00-0038454)",TRUE,TRUE
+"TBD","das@gmail.com","TBD","00-0039471",6,"Player","RB2","RB","BUF","RB, BUF: Frank Gore Jr. (AFC East, ID: 00-0039471)",TRUE,TRUE
+"TBD","das@gmail.com","TBD","00-0039647",7,"Player","RB3","RB","CAR","RB, CAR: Dillon Johnson (NFC South, ID: 00-0039647)",TRUE,TRUE
+"TBD","das@gmail.com","TBD","00-0036297",8,"Player","RB4","FLEX","CHI","RB, CHI: Darrynton Evans (NFC North, ID: 00-0036297)",TRUE,TRUE
+"TBD","das@gmail.com","TBD","00-0035631",9,"Player","TE1","TE","CIN","TE, CIN: Drew Sample (AFC North, ID: 00-0035631)",TRUE,TRUE
+"TBD","das@gmail.com","TBD","00-0039458",10,"Player","TE2","TE","CLE","TE, CLE: Brenden Bates (AFC North, ID: 00-0039458)",TRUE,TRUE
+"TBD","das@gmail.com","TBD","00-0031236",11,"Player","WR1","WR","DAL","WR, DAL: Brandin Cooks (NFC East, ID: 00-0031236)",TRUE,TRUE
+"TBD","das@gmail.com","TBD","00-0038612",12,"Player","WR2","WR","DEN","WR, DEN: A.T. Perry (AFC West, ID: 00-0038612)",TRUE,TRUE
+"TBD","das@gmail.com","TBD","00-0036963",13,"Player","WR3","WR","DET","WR, DET: Amon-Ra St. Brown (NFC North, ID: 00-0036963)",TRUE,TRUE
+"TBD","das@gmail.com","TBD","JAX",14,"Defense / Special teams","D","D","JAX","Defense, JAX (AFC South)",TRUE,TRUE
