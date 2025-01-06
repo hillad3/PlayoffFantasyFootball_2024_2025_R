@@ -33,7 +33,10 @@ season_teams <- c(
   "TEN","WAS"
 )
 
-playoff_teams <- c("BAL","BUF","CLE","DAL","DET","GB","HOU","KC","LA","MIA","PHI","PIT","SF","TB")
+playoff_teams <- c("BAL","BUF","DEN","DET",
+                   "GB","HOU","KC","LA",
+                   "LAC","MIN","PHI","PIT",
+                   "TB","WAS")
 
 
 dt_team_info <- fread(get_last_csv("team_info"))
@@ -46,6 +49,7 @@ team_lookupstring_position <- fread(get_last_csv("lookups"))
 
 dt_scores <- fread(get_last_csv("NFL Fantasy Scores"))
 
+# just a placeholder until actual post season scores are available
 if (dim(dt_scores)[1]==0L){
   dt_scores <- data.table(
     player_id = c("TB","TB","HOU","HOU"),
