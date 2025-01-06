@@ -20,13 +20,10 @@ season_teams <- c(
 )
 
 # update with final listing after last regular season game
-playoff_teams <- c("ARI","ATL","BAL","BUF","CAR",
-                   "CHI","CIN","CLE","DAL","DEN",
-                   "DET","GB","HOU","IND","JAX",
-                   "KC","LA","LAC","LV","MIA",
-                   "MIN","NE","NO","NYG","NYJ",
-                   "PHI","PIT","SEA","SF","TB",
-                   "TEN","WAS")
+playoff_teams <- c("BAL","BUF","DEN","DET",
+                   "GB","HOU","KC","LA",
+                   "LAC","MIN","PHI","PIT",
+                   "TB","WAS")
 
 get_team_info <- function(season_int_ = season_int){
   dt <- data.table::as.data.table(nflreadr::load_teams(current = TRUE))
@@ -193,10 +190,14 @@ get_bonus_stats <- function(dt = pbp, # use get_pbp()
 
   # remove expected instance of player out of normal position for 2024-2025
   bonus <- bonus[!(player_id == "00-0037578" & week == 12),]
+  # remove expected instance of DB player receiving the ball and returning for a TD
+  bonus <- bonus[!(player_id == "00-0037129" & week == 18),]
+
 
   if(any(is.na(bonus$position))){
     print(paste0("There were ", length(bonus$position[is.na(bonus$position)]), " rows removed because of NAs in position"))
     bonus <- bonus[!is.na(position)]
+    stop()
   }
 
   # rename Fullback to Running Back; not applicable as of 2024-2025 season
