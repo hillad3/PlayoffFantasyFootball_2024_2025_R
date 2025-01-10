@@ -8,6 +8,8 @@ library(data.table)
 library(DT)
 library(shinyjs)
 library(shinythemes)
+library(shinyWidgets)
+library(ggplot2)
 library(plotly)
 library(lpSolve)
 
@@ -19,6 +21,7 @@ source("nflPlayerStatsMod.R")
 source("fantasyResultsByRosterMod.R")
 source("fantasyResultsByPlayerMod.R")
 source("additionalAnalysisMod.R")
+source("bracketCreatorMod.R")
 
 
 playoff_year <- 2024L
@@ -33,10 +36,39 @@ season_teams <- c(
   "TEN","WAS"
 )
 
-playoff_teams <- c("BAL","BUF","DEN","DET",
-                   "GB","HOU","KC","LA",
-                   "LAC","MIN","PHI","PIT",
-                   "TB","WAS")
+playoff_standings <- tribble(
+  ~team, ~conf, ~conf_rank, ~x, ~y,
+  "KC",  "AFC", 1,          0,  10,
+  "BUF", "AFC", 2,          0,  2,
+  "BAL", "AFC", 3,          0,  5,
+  "HOU", "AFC", 4,          0,  8,
+  "LAC", "AFC", 5,          0,  7,
+  "PIT", "AFC", 6,          0,  4,
+  "DEN", "AFC", 7,          0,  1,
+  "DET", "NFC", 1,          12, 10,
+  "PHI", "NFC", 2,          12, 2,
+  "TB",  "NFC", 3,          12, 5,
+  "LA",  "NFC", 4,          12, 8,
+  "MIN", "NFC", 5,          12, 7,
+  "WAS", "NFC", 6,          12, 4,
+  "GB",  "NFC", 7,          12, 1
+) |>
+  as.data.table()
+
+if(length(playoff_standings[conf=="AFC"]$team)!=7L){
+  stop("There is an issue with the number of AFC teams")
+}
+if(!all(playoff_standings[conf=="AFC"]$conf_rank %in% 1:7)){
+  stop("The ranking of AFC teams is incomplete")
+}
+if(length(playoff_standings[conf=="NFC"]$team)!=7L){
+  stop("There is an issue with the number of NFC teams")
+}
+if(!all(playoff_standings[conf=="NFC"]$conf_rank %in% 1:7)){
+  stop("The ranking of NFC teams is incomplete")
+}
+
+playoff_teams <- playoff_standings$team
 
 
 dt_team_info <- fread(get_last_csv("team_info"))
@@ -162,6 +194,11 @@ ui <- fluidPage(
       "Build Roster",
       buildRosterUI("b_r", team_lookupstring_position)
     ),
+    tabPanel(
+      "Playoff Bracket",
+      br(),
+      bracketCreatorUI("b_c")
+    ),
     if(!("Post" %in% unique(dt_stats$season_type))){
       tabPanel(
         "Fantasy Results",
@@ -228,8 +265,11 @@ server <- function(input, output, session) {
   # explore stats tab
   nflPlayerStatsServer("nfl_ps", dt_stats, dt_team_info, playoff_teams)
 
-  # # this section is for Roster Selection; uncomment to make active
+  # this section is for Roster Selection; uncomment to make active
   buildRosterServer("b_r", team_lookupstring_position)
+
+  # this section creates the playoff bracket in a ggplot display
+  bracketCreatorServer("b_c", playoff_standings)
 
 }
 
