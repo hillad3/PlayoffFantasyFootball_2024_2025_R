@@ -1,3 +1,7 @@
+# include only the test roster
+/Individual Rosters/
+!Test Roster 1.csv
+
 # History files
 .Rhistory
 .Rapp.history
