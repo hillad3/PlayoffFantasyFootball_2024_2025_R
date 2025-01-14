@@ -309,14 +309,16 @@ get_defense_stats <- function(dt = pbp,
     list(stat_label="def_punt_return_td", football_values = .N, fantasy_points = .N*6L)
   ]
 
-  # calculate points allowed for each team
-  tmp <- rbindlist(list(
+
+  # OLD methodology: calculate points allowed for each team. This includes when defense isn't on
+  # the field, but it now used to verify new methodology, and determine instances where no scores
+  # were made by a team
+  tmp_total_points_allowed_summary1 <- rbindlist(list(
     unique(dt[,.(week, season_type, team_abbr = home_team, football_values = away_score)]),
     unique(dt[,.(week, season_type, team_abbr = away_team, football_values = home_score)])
-  ))
-  tmp[, stat_label := "def_points_allowed"]
-  tmp <- tmp[,.(week, season_type, team_abbr, stat_label, football_values)]
-  def[["def_points_allowed"]] <- tmp[,
+  ))[,
+     stat_label := "total_points_allowed_summary"
+  ][,
     fantasy_points := case_when(
       football_values == 0L ~ 10L,
       football_values >= 1L & football_values <= 6 ~ 7L,
@@ -330,6 +332,135 @@ get_defense_stats <- function(dt = pbp,
       .default = 0L
     )
   ]
+
+  ##  Points allowed should only be counted against the defense when the defense is on the field.
+
+  # By filtering fixed_drive result to "Touchdown" ensures this, since plays with a turnover (i.e.
+  # fumble or interception) are indicated by "Opp touchdown".
+  tmp1 <- dt[
+    fixed_drive_result=="Touchdown" & # ensure that an offensive touchdown result occurs
+    !str_detect(desc,"TOUCHDOWN NULLIFIED") & # exclude any rows with a nullified touchdown
+    str_detect(desc,"TOUCHDOWN") & # otherwise include all rows where a touchdown was made
+    touchdown==1L # ensure a touchdown was made, which basically ensures no reversed calls
+  ]
+  tmp1 <- tmp1[,.(week,season_type, scoring_team = posteam, other_team = defteam, desc)]
+  tmp1[,stat_label:="touchdown_points"]
+  tmp1 <- tmp1[,
+       by = .(week, season_type, scoring_team, other_team, stat_label),
+       list(football_values=6L*.N)]
+
+  tmp2 <- dt[
+    fixed_drive_result=="Opp touchdown" & # ensure that an offensive touchdown result occurs
+    !str_detect(desc,"TOUCHDOWN NULLIFIED") & # exclude any rows with a nullified touchdown
+    str_detect(desc,"TOUCHDOWN") & # otherwise include all rows where a touchdown was made
+    touchdown==1L # ensure a touchdown was made, which basically ensures no reversed calls
+  ]
+  tmp2 <- tmp2[,.(week,season_type, other_team = posteam, scoring_team = defteam, desc)]
+  tmp2[,stat_label:="def_touchdown_points"]
+  tmp2 <- tmp2[,
+               by = .(week, season_type, scoring_team, other_team, stat_label),
+               list(football_values=6L*.N)]
+
+  tmp3 <- dt[play_type=="extra_point" & extra_point_result=="good"]
+  tmp3 <- tmp3[,.(week,season_type, scoring_team = posteam, other_team = defteam, desc)]
+  tmp3[,stat_label:="pat_points"]
+  tmp3 <- tmp3[,
+               by = .(week, season_type, scoring_team, other_team, stat_label),
+               list(football_values = 1L * .N)]
+
+  tmp4 <- dt[
+    str_detect(desc,"TWO-POINT CONVERSION ATTEMPT") &
+    str_detect(desc,"ATTEMPT SUCCEEDS") &
+    play_type != "no_play"
+  ]
+  tmp4 <- tmp4[,.(week,season_type, scoring_team = posteam, other_team = defteam, desc)]
+  tmp4[,stat_label:="2pt_conv_points"]
+  tmp4 <- tmp4[,
+               by = .(week, season_type, scoring_team, other_team, stat_label),
+               list(football_values = 2L * .N)]
+
+  tmp5 <- dt[
+    str_detect(desc,"DEFENSIVE TWO-POINT ATTEMPT") &
+    str_detect(desc,"ATTEMPT SUCCEEDS") &
+    play_type != "no_play"
+  ]
+  tmp5 <- tmp5[,.(week,season_type, other_team = posteam, scoring_team = defteam, desc)]
+  tmp5[,stat_label:="def_2pt_conv_points"]
+  tmp5 <- tmp5[,
+               by = .(week, season_type, scoring_team, other_team, stat_label),
+               list(football_values = 2L * .N)]
+
+  tmp6 <- dt[play_type=="field_goal" & field_goal_result=="made"]
+  tmp6 <- tmp6[,.(week,season_type, scoring_team = posteam, other_team = defteam, desc)]
+  tmp6[,stat_label:="fg_points"]
+  tmp6 <- tmp6[,
+               by = .(week, season_type, scoring_team, other_team, stat_label),
+               list(football_values = 3L * .N)]
+
+  tmp7 <- dt[
+    fixed_drive_result=="Safety" &
+    str_detect(desc,"SAFETY") # &
+    # play_type !="no_play" there are some instances where excluding this will exclude actual safeties
+  ]
+  tmp7 <- tmp7[,.(week,season_type, other_team = posteam, scoring_team = defteam, desc)]
+  tmp7[,stat_label:="safety_points"]
+  tmp7 <- tmp7[,
+               by = .(week, season_type, scoring_team, other_team, stat_label),
+               list(football_values = 2L * .N)]
+
+  tmp8 <- rbindlist(list(
+      unique(dt[away_score==0L,.(week, season_type, scoring_team = away_team, other_team = home_team, football_values = away_score)]),
+      unique(dt[home_score==0L,.(week, season_type, scoring_team = home_team, other_team = away_team, football_values = home_score)])
+    )
+  )
+  tmp8[,stat_label:="no_points_scored_in_game"]
+  setcolorder(tmp8, neworder = c("week", "season_type", "scoring_team", "other_team", "stat_label", "football_values"))
+
+  total_points_allowed_details <- rbindlist(list(tmp1,tmp2,tmp3,tmp4,tmp5,tmp6,tmp7,tmp8))
+  rm(tmp1,tmp2,tmp3,tmp4,tmp5,tmp6,tmp7,tmp8)
+
+  tmp_total_points_allowed_summary2 <- total_points_allowed_details[
+    ,
+    by=.(week, season_type, scoring_team, other_team),
+    list(football_values = sum(football_values))
+  ]
+
+  check_total_points <- merge.data.table(
+    tmp_total_points_allowed_summary1,
+    tmp_total_points_allowed_summary2,
+    by.x = c("week", "season_type", "team_abbr"),
+    by.y = c("week", "season_type", "other_team"),
+    all = TRUE
+  )[,
+     test:=(football_values.x == football_values.y)
+  ]
+
+  if(all(check_total_points$test)){
+    # the tieout check passes, so pare down to only those points scored when the defense is on the field
+    def[["def_points_allowed"]] <- total_points_allowed_details[
+      !str_detect(stat_label,"^def"),
+      by=.(week, season_type, team_abbr = other_team),
+      list(stat_label="def_points_allowed", football_values = sum(football_values))
+    ][,
+      fantasy_points := case_when(
+        football_values == 0L ~ 10L,
+        football_values >= 1L & football_values <= 6 ~ 7L,
+        football_values >= 7L & football_values <= 13 ~ 4L,
+        football_values >= 14L & football_values <= 17 ~ 1L,
+        football_values >= 18L & football_values <= 21 ~ 0L,
+        football_values >= 22L & football_values <= 27 ~ -1L,
+        football_values >= 28L & football_values <= 34 ~ -4L,
+        football_values >= 35L & football_values <= 45 ~ -7L,
+        football_values >= 46L ~ -10L,
+        .default = 0L
+      )
+    ]
+
+    rm(tmp_total_points_allowed_summary1, tmp_total_points_allowed_summary2)
+
+  } else {
+    stop("tmp_total_points_allowed_summary 1 & 2 do not tie out to each other. Review the formulas in the function get_defense_stats()")
+  }
 
   def <- rbindlist(def)
   def[, position:="Defense"]
@@ -621,7 +752,7 @@ team_lookupstring_position <- rbindlist(list(
 
 dir <- "./App/data/"
 
-if(TRUE){
+if(FALSE){
   fwrite(
     dt_stats,
     file = paste0(
@@ -629,7 +760,7 @@ if(TRUE){
       "stats_",
       season_int,"_",
       paste0(season_type, collapse = "_"),"_gen",
-      str_remove_all(Sys.time(), ":"),".csv"
+      str_remove_all(str_sub(Sys.time(),1,19), ":"),".csv"
     )
   )
 
@@ -643,7 +774,7 @@ if(TRUE){
       "_",
       paste0(season_type, collapse = "_"),
       "_gen",
-      str_remove_all(Sys.time(), ":"),
+      str_remove_all(str_sub(Sys.time(),1,19), ":"),
       ".csv"
     )
   )
@@ -657,7 +788,7 @@ if(TRUE){
       "_",
       paste0(season_type, collapse = "_"),
       "_gen",
-      str_remove_all(Sys.time(), ":"),
+      str_remove_all(str_sub(Sys.time(),1,19), ":"),
       ".csv"
     )
   )
@@ -671,7 +802,7 @@ if(TRUE){
       "_",
       paste0(season_type, collapse = "_"),
       "_gen",
-      str_remove_all(Sys.time(), ":"),
+      str_remove_all(str_sub(Sys.time(),1,19), ":"),
       ".csv"
     )
   )
