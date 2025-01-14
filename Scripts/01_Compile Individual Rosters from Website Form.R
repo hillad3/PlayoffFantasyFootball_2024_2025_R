@@ -21,8 +21,8 @@
   roster_files <- directory_files[str_detect(directory_files, "xlsx$|csv$")]
 
   # exclude specific types of files
-  roster_files <- roster_files[!str_detect(roster_files, "^Compiled Roster, Gen")]
-  excluded_files <- c("")
+  roster_files <- roster_files[!str_detect(roster_files, "^Dummy Repex")]
+  excluded_files <- c("Test Roster 1.csv")
   roster_files <- roster_files[!(roster_files %in% excluded_files)]
 
   if(any(str_detect(roster_files, "xlsx$"))){
@@ -146,7 +146,7 @@
       "App/data/Playoff Fantasy Rosters for ",
       season,
       ", Compiled ",
-      str_remove_all(Sys.time(), ":"),
+      str_remove_all(str_sub(Sys.time(),1, 19), ":"),
       ".csv"
     ),
   )
