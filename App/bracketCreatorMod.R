@@ -115,7 +115,7 @@ bracketCreatorServer <- function(id, ps){
           annotate("text",
                    x = ps[conf=="AFC" & conf_rank==2L]$x+x1_len*1.5,
                    y = ps[conf=="AFC" & conf_rank==2L]$y-y1_len*0,
-                   label = "TBD") +
+                   label = "BUF") +
 
           # NFC week 1, rank 2 and 7 bracket
           annotate("segment",
@@ -141,7 +141,7 @@ bracketCreatorServer <- function(id, ps){
           annotate("text",
                    x = ps[conf=="NFC" & conf_rank==2L]$x-x1_len*1.5,
                    y = ps[conf=="NFC" & conf_rank==2L]$y-y1_len*0,
-                   label = "TBD") +
+                   label = "PHI") +
 
           # AFC week 1, rank 3 and 6 bracket
           annotate("segment",
@@ -167,7 +167,7 @@ bracketCreatorServer <- function(id, ps){
           annotate("text",
                    x = ps[conf=="AFC" & conf_rank==3L]$x+x1_len*1.5,
                    y = ps[conf=="AFC" & conf_rank==3L]$y-y1_len*0,
-                   label = "TBD") +
+                   label = "BAL") +
 
           # NFC week 1, rank 3 and 6 bracket
           annotate("segment",
@@ -193,7 +193,7 @@ bracketCreatorServer <- function(id, ps){
           annotate("text",
                    x = ps[conf=="NFC" & conf_rank==3L]$x-x1_len*1.5,
                    y = ps[conf=="NFC" & conf_rank==3L]$y-y1_len*0,
-                   label = "TBD") +
+                   label = "WAS") +
 
           # AFC week 1, rank 4 and 5 bracket
           annotate("segment",
@@ -219,7 +219,7 @@ bracketCreatorServer <- function(id, ps){
           annotate("text",
                    x = ps[conf=="AFC" & conf_rank==4L]$x+x1_len*1.5,
                    y = ps[conf=="AFC" & conf_rank==4L]$y-y1_len*0,
-                   label = "TBD") +
+                   label = "HOU") +
 
           # NFC week 1, rank 4 and 5 bracket
           annotate("segment",
@@ -245,7 +245,7 @@ bracketCreatorServer <- function(id, ps){
           annotate("text",
                    x = ps[conf=="NFC" & conf_rank==4L]$x-x1_len*1.5,
                    y = ps[conf=="NFC" & conf_rank==4L]$y-y1_len*0,
-                   label = "TBD") +
+                   label = "LA") +
 
           # AFC week 2, rank 1 to rank 4/5 extensions
           annotate("segment",
@@ -295,20 +295,20 @@ bracketCreatorServer <- function(id, ps){
                    y = ps[conf=="AFC" & conf_rank==3L]$y-y1_len*1.5,
                    label = "TBD") +
 
-          # NFC week 2, rank 3/6 to rank 2/7 extensions
+          # NFC week 2, rank 4/5 to rank 2/7 extensions
           annotate("segment",
-                   x = ps[conf=="NFC" & conf_rank==3L]$x-x1_len*2,
-                   xend = ps[conf=="NFC" & conf_rank==3L]$x-x1_len*2,
-                   y = ps[conf=="NFC" & conf_rank==3L]$y-y1_len*0.5,
-                   yend = ps[conf=="NFC" & conf_rank==3L]$y-y1_len*3.5) +
+                   x = ps[conf=="NFC" & conf_rank==4L]$x-x1_len*2,
+                   xend = ps[conf=="NFC" & conf_rank==4L]$x-x1_len*2,
+                   y = ps[conf=="NFC" & conf_rank==4L]$y-y1_len*0.5,
+                   yend = ps[conf=="NFC" & conf_rank==4L]$y-y1_len*3.5) +
           annotate("segment",
-                   x = ps[conf=="NFC" & conf_rank==3L]$x-x1_len*2,
-                   xend = ps[conf=="NFC" & conf_rank==3L]$x-x1_len*4,
-                   y = ps[conf=="NFC" & conf_rank==3L]$y-y1_len*2,
-                   yend = ps[conf=="NFC" & conf_rank==3L]$y-y1_len*2) +
+                   x = ps[conf=="NFC" & conf_rank==4L]$x-x1_len*2,
+                   xend = ps[conf=="NFC" & conf_rank==4L]$x-x1_len*4,
+                   y = ps[conf=="NFC" & conf_rank==4L]$y-y1_len*2,
+                   yend = ps[conf=="NFC" & conf_rank==4L]$y-y1_len*2) +
           annotate("text",
-                   x = ps[conf=="NFC" & conf_rank==3L]$x-x1_len*3,
-                   y = ps[conf=="NFC" & conf_rank==3L]$y-y1_len*1.5,
+                   x = ps[conf=="NFC" & conf_rank==4L]$x-x1_len*3,
+                   y = ps[conf=="NFC" & conf_rank==4L]$y-y1_len*1.5,
                    label = "TBD") +
 
           # AFC week 3, rank 1/4/5 to rank 2/7/3/6 extensions
@@ -327,7 +327,7 @@ bracketCreatorServer <- function(id, ps){
                    y = ps[conf=="AFC" & conf_rank==1L]$y-y1_len*3.5,
                    label = "TBD") +
 
-          # NFC week 3, rank 1/4/5 to rank 2/7/3/6 extensions
+          # NFC week 3, rank 1/3/6 to rank 2/7/4/5 extensions
           annotate("segment",
                    x = ps[conf=="NFC" & conf_rank==1L]$x-x1_len*4,
                    xend = ps[conf=="NFC" & conf_rank==1L]$x-x1_len*4,
