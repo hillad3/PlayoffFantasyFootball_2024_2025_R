@@ -47,10 +47,10 @@ playoff_standings <- tribble(
   "DEN", "AFC", 7,          0,  1,
   "DET", "NFC", 1,          12, 10,
   "PHI", "NFC", 2,          12, 2,
-  "TB",  "NFC", 3,          12, 5,
-  "LA",  "NFC", 4,          12, 8,
-  "MIN", "NFC", 5,          12, 7,
-  "WAS", "NFC", 6,          12, 4,
+  "TB",  "NFC", 3,          12, 8,
+  "LA",  "NFC", 4,          12, 5,
+  "MIN", "NFC", 5,          12, 4,
+  "WAS", "NFC", 6,          12, 7,
   "GB",  "NFC", 7,          12, 1
 ) |>
   as.data.table()
@@ -173,7 +173,7 @@ dt_fantasy_rosters <- dt_fantasy_rosters |>
             by = c("fantasy_team_and_initials"))
 
 
-last_refresh <- "12/27/2024 5:22PM"
+last_refresh <- "1/14/2025 7:40AM"
 
 
 ui <- fluidPage(
@@ -185,54 +185,48 @@ ui <- fluidPage(
   tags$h1("Tom's Playoff Fantasy Football League", style = "text-align:center; margin-bottom:0px"),
   tags$h3("(2024-2025)", style = "text-align:center; margin-top:0px"),
   tabsetPanel(
-    tabPanel(
-      "How to Play",
-      fluidPage(howToPlayUIonly())
-    ),
     # uncomment this code when needed for creating rosters
+    # tabPanel(
+    #   "Build Roster",
+    #   buildRosterUI("b_r", team_lookupstring_position)
+    # ),
     tabPanel(
-      "Build Roster",
-      buildRosterUI("b_r", team_lookupstring_position)
-    ),
-    tabPanel(
-      "Playoff Bracket",
+      "Fantasy Results",
       br(),
-      bracketCreatorUI("b_c")
+      tabsetPanel(
+        type = "pills",
+        tabPanel(
+          "By Roster",
+          br(),
+          #tags$h4("Today's scores expected to be updated ~7AM the next day."),
+          tags$h4("Week 1 scores should be final."),
+          tags$p(paste0("Scores last refreshed: ",last_refresh)),
+          fantasyResultsbyRosterUI("by_roster", summary_by_team)
+        ),
+        tabPanel(
+          "By Player",
+          br(),
+          fantasyResultsbyPlayerUI("by_player", dt_team_info, playoff_teams, playoff_year)
+        ),
+        tabPanel(
+          "Perfect Lineup",
+          perfectLineupUI("perf", dt_stats)
+        ),
+        tabPanel(
+          "Additional Analysis",
+          additionalAnalysisUI("a_a")
+        ),
+        tabPanel(
+          "Playoff Bracket",
+          br(),
+          bracketCreatorUI("b_c")
+        ),
+        tabPanel(
+          "Rules & Scoring",
+          fluidPage(howToPlayUIonly())
+        ),
+      )
     ),
-    if(!("Post" %in% unique(dt_stats$season_type))){
-      tabPanel(
-        "Fantasy Results",
-        br(),
-        h1("No scores to display")
-      )
-    } else {
-      tabPanel(
-        "Fantasy Results",
-        br(),
-        tabsetPanel(
-          type = "pills",
-          tabPanel(
-            "By Roster",
-            br(),
-            tags$p(paste0("Scores last refreshed: ",last_refresh)),
-            fantasyResultsbyRosterUI("by_roster", summary_by_team)
-          ),
-          tabPanel(
-            "By Player",
-            br(),
-            fantasyResultsbyPlayerUI("by_player", dt_team_info, playoff_teams, playoff_year)
-          ),
-          tabPanel(
-            "Perfect Lineup",
-            perfectLineupUI("perf", dt_stats)
-          ),
-          tabPanel(
-            "Additional Analysis",
-            additionalAnalysisUI("a_a")
-          )
-        )
-      )
-    },
     tabPanel(
       "NFL Player Stats",
       nflPlayerStatsUI("nfl_ps", dt_team_info, playoff_teams, playoff_year)
@@ -266,7 +260,7 @@ server <- function(input, output, session) {
   nflPlayerStatsServer("nfl_ps", dt_stats, dt_team_info, playoff_teams)
 
   # this section is for Roster Selection; uncomment to make active
-  buildRosterServer("b_r", team_lookupstring_position)
+  # buildRosterServer("b_r", team_lookupstring_position)
 
   # this section creates the playoff bracket in a ggplot display
   bracketCreatorServer("b_c", playoff_standings)
