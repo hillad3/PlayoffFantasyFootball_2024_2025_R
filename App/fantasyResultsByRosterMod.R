@@ -101,14 +101,14 @@ fantasyResultsbyRosterServer <- function(id, summary_by_team_, summary_by_team_a
           )
         } else {
           dt <- summary_by_team_[fantasy_team_and_initials %in% input$selected_rosters]
-          DT::datatable(dt |>
-                          rename(`Fantasy Team`=fantasy_team_and_initials,
-                                 `Wild Card (Week 1)`=week_19,
-                                 # `Divisional (Week 2)`=week_20,
-                                 # `Conference (Week 3)`=week_21,
-                                 # `Superbowl (Week 4)`=week_22,
-                                 `Total Points`=fantasy_points,
-                                 `Rank`=rank))
+          setnames(dt, "fantasy_team_and_initials", "Fantasy Team")
+          if("week_19" %in% names(dt)){setnames(dt, "week_19", "Wild Card (Week 1)")}
+          if("week_20" %in% names(dt)){setnames(dt, "week_20", "Divisional (Week 2)")}
+          if("week_21" %in% names(dt)){setnames(dt, "week_21", "Conference (Week 3)")}
+          if("week_22" %in% names(dt)){setnames(dt, "week_22", "Superbowl (Week 4)")}
+          if("fantasy_points" %in% names(dt)){setnames(dt, "fantasy_points", "Total Points")}
+          if("rank" %in% names(dt)){setnames(dt, "rank", "Rank")}
+          DT::datatable(dt)
         }
       })
 
@@ -120,18 +120,26 @@ fantasyResultsbyRosterServer <- function(id, summary_by_team_, summary_by_team_a
           )
         } else {
           dt <- summary_by_team_and_player_[fantasy_team_and_initials %in% input$selected_rosters]
+          setnames(
+            dt,
+            old = c("fantasy_team_and_initials",
+                    "team_abbr",
+                    "position_code",
+                    "player_name",
+                    "player_id"),
+            new = c("Fantasy Team",
+                    "Position Code",
+                    "Team Abbr.",
+                    "Player Name",
+                    "Player ID")
+          )
+          if("week_19" %in% names(dt)){setnames(dt, "week_19", "Wild Card (Week 1)")}
+          if("week_20" %in% names(dt)){setnames(dt, "week_20", "Divisional (Week 2)")}
+          if("week_21" %in% names(dt)){setnames(dt, "week_21", "Conference (Week 3)")}
+          if("week_22" %in% names(dt)){setnames(dt, "week_22", "Superbowl (Week 4)")}
+          if("fantasy_points" %in% names(dt)){setnames(dt, "fantasy_points", "Total Points")}
           DT::datatable(
-            dt |>
-              rename(`Fantasy Team`=fantasy_team_and_initials,
-                     `Team Abbr.`=team_abbr,
-                     `Position Code`=position_code,
-                     `Player Name`=player_name,
-                     `Player ID`=player_id,
-                     `Wild Card (Week 1)`=week_19,
-                     # `Divisional (Week 2)`=week_20,
-                     # `Conference (Week 3)`=week_21,
-                     # `Superbowl (Week 4)`=week_22,
-                     `Total Points`=fantasy_points),
+            dt,
             options = list(pageLength = 14)
           )
         }
