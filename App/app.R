@@ -173,7 +173,7 @@ dt_fantasy_rosters <- dt_fantasy_rosters |>
             by = c("fantasy_team_and_initials"))
 
 
-last_refresh <- "1/14/2025 7:40AM"
+last_refresh <- "1/27/2025 9:20AM"
 
 
 ui <- fluidPage(
@@ -199,7 +199,7 @@ ui <- fluidPage(
           "By Roster",
           br(),
           #tags$h4("Today's scores expected to be updated ~7AM the next day."),
-          tags$h4("Week 1 scores should be final."),
+          tags$h4("Week 3 should be final."),
           tags$p(paste0("Scores last refreshed: ",last_refresh)),
           fantasyResultsbyRosterUI("by_roster", summary_by_team)
         ),
