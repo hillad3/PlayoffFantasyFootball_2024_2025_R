@@ -370,8 +370,8 @@ get_defense_stats <- function(dt = pbp,
 
   tmp4 <- dt[
     str_detect(desc,"TWO-POINT CONVERSION ATTEMPT") &
-    str_detect(desc,"ATTEMPT SUCCEEDS") &
-    play_type != "no_play"
+    str_detect(desc,"ATTEMPT SUCCEEDS") # &
+    # play_type != "no_play" # this needed to be removed to ensure that the superbowl LIX was correct; didn't seem to affect any previous games
   ]
   tmp4 <- tmp4[,.(week,season_type, scoring_team = posteam, other_team = defteam, desc)]
   tmp4[,stat_label:="2pt_conv_points"]
