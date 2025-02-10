@@ -353,7 +353,7 @@ bracketCreatorServer <- function(id, ps){
           annotate("text",
                    x = ps[conf=="AFC" & conf_rank==1L]$x+x1_len*6,
                    y = ps[conf=="AFC" & conf_rank==1L]$y-y1_len*4,
-                   label = "TBD") +
+                   label = "PHI") +
 
 
 
