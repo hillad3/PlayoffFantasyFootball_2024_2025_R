@@ -377,7 +377,13 @@ buildRosterServer <- function(id, team_lookupstring_position_){
 
       output$download_roster <- downloadHandler(
         filename = function() {
-          paste0('Playoff Fantasy Roster ',Sys.time(), '.csv')
+          paste0('Playoff Fantasy Roster - ',
+                 participant_reactive()$fantasy_owner_name,
+                 " - ",
+                 participant_reactive()$fantasy_team_name,
+                 ", ",
+                 Sys.Date(),
+                 '.csv')
         },
         content = function(file) {
           write.csv(roster_data(), file, row.names = FALSE)
