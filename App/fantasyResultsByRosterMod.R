@@ -97,7 +97,8 @@ fantasyResultsbyRosterServer <- function(id, summary_by_team_, summary_by_team_a
       output$roster_summary_table <- renderDT({
         if(is_empty(input$selected_rosters)){
           DT::datatable(
-            data.table(" " = "No data available")
+            data.table(" " = "No data available"),
+            rownames = FALSE
           )
         } else {
           dt <- summary_by_team_[fantasy_team_and_initials %in% input$selected_rosters]
@@ -108,7 +109,7 @@ fantasyResultsbyRosterServer <- function(id, summary_by_team_, summary_by_team_a
           if("week_22" %in% names(dt)){setnames(dt, "week_22", "Superbowl (Week 4)")}
           if("fantasy_points" %in% names(dt)){setnames(dt, "fantasy_points", "Total Points")}
           if("rank" %in% names(dt)){setnames(dt, "rank", "Rank")}
-          DT::datatable(dt)
+          DT::datatable(dt, rownames=FALSE)
         }
       })
 
@@ -116,6 +117,7 @@ fantasyResultsbyRosterServer <- function(id, summary_by_team_, summary_by_team_a
         if(is_empty(input$selected_rosters)){
           DT::datatable(
             data.table(" " = "No data available"),
+            rownames = FALSE,
             options = list(pageLength = 14)
           )
         } else {
@@ -128,8 +130,8 @@ fantasyResultsbyRosterServer <- function(id, summary_by_team_, summary_by_team_a
                     "player_name",
                     "player_id"),
             new = c("Fantasy Team",
-                    "Position Code",
                     "Team Abbr.",
+                    "Position Code",
                     "Player Name",
                     "Player ID")
           )
@@ -140,6 +142,7 @@ fantasyResultsbyRosterServer <- function(id, summary_by_team_, summary_by_team_a
           if("fantasy_points" %in% names(dt)){setnames(dt, "fantasy_points", "Total Points")}
           DT::datatable(
             dt,
+            rownames = FALSE,
             options = list(pageLength = 14)
           )
         }

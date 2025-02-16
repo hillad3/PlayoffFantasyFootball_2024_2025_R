@@ -44,14 +44,15 @@ fantasyResultsbyPlayerServer <- function(id, dt_stats_, dt_team_info_, playoff_t
       observeEvent(input$toggleFilterMenu, {
         shinyjs::toggle(id = "filterMenu")
       })
-      
+
       stat_teams <- reactive({input$selected_teams})
 
       output$stats <- renderDT({
-        
+
         if(is_empty(input$selected_teams)){
           DT::datatable(
             data.table(" " = "No data available"),
+            rownames = FALSE,
             options = list(pageLength = 25)
           )
         } else {
@@ -61,11 +62,12 @@ fantasyResultsbyPlayerServer <- function(id, dt_stats_, dt_team_info_, playoff_t
               input$selected_position,
               input$selected_teams
             ),
+            rownames = FALSE,
             options = list(pageLength = 25)
           )
         }
       })
-      
+
       observeEvent(
         input$select_all_teams, {
           updateCheckboxGroupInput(
@@ -77,7 +79,7 @@ fantasyResultsbyPlayerServer <- function(id, dt_stats_, dt_team_info_, playoff_t
             selected = as.list(dt_team_info_[team_abbr %in% playoff_teams_, team_abbr])
           )
         })
-      
+
       observeEvent(
         input$deselect_all_teams, {
           updateCheckboxGroupInput(

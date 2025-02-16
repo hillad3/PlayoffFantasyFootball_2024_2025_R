@@ -172,24 +172,45 @@ dt_fantasy_rosters <- dt_fantasy_rosters |>
               select(fantasy_team_and_initials, rank),
             by = c("fantasy_team_and_initials"))
 
+inactivity <- "function idleTimer() {
+  var t = setTimeout(logout, 900000); // performs logout function after 15 minutes
+  window.onmousemove = resetTimer; // catches mouse movements
+  window.onmousedown = resetTimer; // catches mouse movements
+  window.onclick = resetTimer;     // catches mouse clicks
+  window.onscroll = resetTimer;    // catches scrolling
+  window.onkeypress = resetTimer;  //catches keyboard actions
+
+  function logout() {
+    window.close();  //close the window
+  }
+
+  function resetTimer() {
+    clearTimeout(t);
+    t = setTimeout(logout, 900000);  // time is in milliseconds (1000 is 1 second)
+  }
+}
+idleTimer();"
+
 
 last_refresh <- "2/10/2025 7:00AM"
 
 
 ui <- fluidPage(
   shinyjs::useShinyjs(),
+  tags$script(inactivity),
   tags$head(
     # tags$link(rel = "stylesheet", type = "text/css", href = "styles.freelancer.css"),
     tags$title("Tom's Playoff Fantasy Football League")
   ),
   tags$h1("Tom's Playoff Fantasy Football League", style = "text-align:center; margin-bottom:0px"),
   tags$h3("(2024-2025)", style = "text-align:center; margin-top:0px"),
+  tags$p("This web page will close automatically if idle for 15 minutes. If you are building a roster, you will lose unsaved work.", style="font-size:75%; text-align:center"),
   tabsetPanel(
-    # uncomment this code when needed for creating rosters
-    # tabPanel(
-    #   "Build Roster",
-    #   buildRosterUI("b_r", team_lookupstring_position)
-    # ),
+    # TODO uncomment this code when needed for creating rosters
+    tabPanel(
+      "Build Roster",
+      buildRosterUI("b_r", team_lookupstring_position)
+    ),
     tabPanel(
       "Fantasy Results",
       br(),
@@ -259,11 +280,25 @@ server <- function(input, output, session) {
   # explore stats tab
   nflPlayerStatsServer("nfl_ps", dt_stats, dt_team_info, playoff_teams)
 
-  # this section is for Roster Selection; uncomment to make active
-  # buildRosterServer("b_r", team_lookupstring_position)
+  # TODO this section is for Roster Selection; uncomment to make active
+  buildRosterServer("b_r", team_lookupstring_position)
 
   # this section creates the playoff bracket in a ggplot display
   bracketCreatorServer("b_c", playoff_standings)
+
+
+  ##### this handles the timeout_counter
+
+  idle <- reactiveVal(0) # reactive variable to track idle time
+  lastActivity <- reactiveVal(isolate(Sys.time()))   # initialize reactive to track current time
+
+  observe({
+    # ShinyApps can timeout after 1 minute. This ensures that the window stays open until
+    # the JavaScript inactivity variable closes the window
+    invalidateLater(59000, session) # check observe() every 60 seconds
+    idle(difftime(isolate(Sys.time()), lastActivity(), units = "mins")) # number of minutes since last activity
+
+  })
 
 }
 

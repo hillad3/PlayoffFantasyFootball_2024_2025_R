@@ -212,17 +212,24 @@ buildRosterServer <- function(id, team_lookupstring_position_){
 
       })
 
-      output$players_remaining_DT <- renderDT({players_remaining()})
+      output$players_remaining_DT <- renderDT({
+        DT::datatable(
+          players_remaining(),
+          rownames = FALSE
+        )
+      })
 
       output$players_on_roster_DT <- renderDT({
         if(is_empty(roster$players)){
           DT::datatable(
             data.table(" " = "Roster is empty"),
+            rownames = FALSE,
             options = list(pageLength = 25)
           )
         } else {
           DT::datatable(
             team_lookupstring_position_[lookup_string %in% roster$players],
+            rownames = FALSE,
             options = list(pageLength = 25)
           )
         }
@@ -288,6 +295,7 @@ buildRosterServer <- function(id, team_lookupstring_position_){
       })
 
       download_btn_status <- reactive({
+
         all(
           participant_reactive()$fantasy_owner_name!="",
           str_detect(participant_reactive()$fantasy_owner_email,"[:graph:]{3,}@[:alnum:]{1,}\\.[:alnum:]{2,}"),
@@ -300,6 +308,7 @@ buildRosterServer <- function(id, team_lookupstring_position_){
       observeEvent(
         download_btn_status(),
         {
+
           if(download_btn_status()) {
             shinyjs::enable("download_roster")
 
@@ -311,6 +320,7 @@ buildRosterServer <- function(id, team_lookupstring_position_){
 
       # create final roster for downloadHandler
       roster_data <- reactive({
+
         team_lookupstring_position_ |>
           filter(lookup_string %in% roster$players) |>
           select(position, team_abbr, lookup_string) |>
@@ -373,6 +383,7 @@ buildRosterServer <- function(id, team_lookupstring_position_){
           write.csv(roster_data(), file, row.names = FALSE)
         }
       )
+
     }
   )
 }

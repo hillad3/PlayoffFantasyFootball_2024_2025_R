@@ -3,7 +3,7 @@ require(lpSolve)
 require(tidyr)
 
 get_perfect_lineup <- function(dt, teams, weeks=NULL){
-  
+
   if(!is.null(weeks)){
     dt <- dt[week %in% weeks]
   }
@@ -127,19 +127,19 @@ get_perfect_lineup <- function(dt, teams, weeks=NULL){
     all.x = TRUE,
     allow.cartesian = TRUE
   )[,position.y:=NULL]
-  
-  dt5 <- dt5 |> 
+
+  dt5 <- dt5 |>
     pivot_wider(
-      id_cols = c(position.x, team_abbr, player_name, fantasy_points), 
+      id_cols = c(position.x, team_abbr, player_name, fantasy_points),
       names_from = week,
-      values_from = week_points, 
+      values_from = week_points,
       values_fill = 0
-    ) |> 
-    select(-starts_with("NA")) |> 
+    ) |>
+    select(-starts_with("NA")) |>
     as.data.table()
-  
+
   setorder(dt5, -fantasy_points)
-  
+
   possible_cols <-
     c(
       "position.x",
@@ -162,10 +162,10 @@ get_perfect_lineup <- function(dt, teams, weeks=NULL){
       "Superbowl (Week 4)",
       "Total Points"
     )
-  
+
   new_order <- possible_cols[possible_cols %in% names(dt5)]
   new_names <- new_names[possible_cols %in% names(dt5)]
-  
+
   dt5 <- dt5[,.SD, .SDcols = new_order]
   setnames(dt5, new = new_names)
 
@@ -184,7 +184,7 @@ perfectLineupUI <- function(id, dt_stats_){
       label = "Playoff Week(s)",
       choiceNames = paste0("Week ",1:length(unique(dt_stats_[season_type=="Post"]$week))),
       choiceValues = c(19:max(unique(dt_stats_[season_type=="Post"]$week))),
-      selected = c(19:max(unique(dt_stats_[season_type=="Post"]$week))), 
+      selected = c(19:max(unique(dt_stats_[season_type=="Post"]$week))),
       inline = TRUE
     ),
     tags$span("Theoretical max points with a perfect lineup: "),
@@ -201,30 +201,32 @@ perfectLineupUI <- function(id, dt_stats_){
 
 perfectLineupServer <- function(id, dt_stats_, playoff_teams_){
   moduleServer(
-    id, 
+    id,
     function(input,output,session){
       # perfect lineup section
-      
+
       output$perfect_lineup_points <- renderText({
         if(is_empty(input$perfline_weeks)){
           "N/A, no playoffs weeks selected"
         } else {
           get_perfect_lineup(dt_stats_, playoff_teams_, input$perfline_weeks)[[2]]
-        }    
+        }
       })
-      
+
       output$perfect_lineup <- renderDT({
         if(is_empty(input$perfline_weeks)){
           DT::datatable(
             data.table(" " = "No playoff weeks selected"),
+            rownames = FALSE,
             options = list(pageLength = 14)
           )
         } else {
           DT::datatable(
             get_perfect_lineup(
-              dt_stats_, 
-              playoff_teams_, 
+              dt_stats_,
+              playoff_teams_,
               input$perfline_weeks)[[1]],
+            rownames = FALSE,
             options = list(pageLength = 14)
           )
         }

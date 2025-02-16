@@ -84,17 +84,21 @@ nflPlayerStatsServer <- function(id, dt_stats_, dt_team_info_, playoff_teams_){
         if(is_empty(input$selected_teams)){
           DT::datatable(
             data.table(" " = "No data available"),
+            rownames = FALSE,
             options = list(pageLength = 14)
           )
         } else {
-          update_app_stats(
-            dt_stats_,
-            stat_params()$pos,
-            stat_params()$season_type,
-            stat_params()$stat_type,
-            stat_teams(),
-            is_summed_stat = FALSE,
-            is_wide_table = stat_params()$pivot_data
+          DT::datatable(
+            update_app_stats(
+              dt_stats_,
+              stat_params()$pos,
+              stat_params()$season_type,
+              stat_params()$stat_type,
+              stat_teams(),
+              is_summed_stat = FALSE,
+              is_wide_table = stat_params()$pivot_data
+            ),
+            rownames = FALSE
           )
         }
       })
@@ -104,18 +108,23 @@ nflPlayerStatsServer <- function(id, dt_stats_, dt_team_info_, playoff_teams_){
         if(is_empty(input$selected_teams)){
           DT::datatable(
             data.table(" " = "No data available"),
+            rownames = FALSE,
             options = list(pageLength = 14)
           )
         } else {
-          update_app_stats(
-            dt_stats_,
-            stat_params()$pos,
-            stat_params()$season_type,
-            stat_params()$stat_type,
-            stat_teams(),
-            is_summed_stat = TRUE,
-            is_wide_table = stat_params()$pivot_data
+          DT::datatable(
+            update_app_stats(
+              dt_stats_,
+              stat_params()$pos,
+              stat_params()$season_type,
+              stat_params()$stat_type,
+              stat_teams(),
+              is_summed_stat = TRUE,
+              is_wide_table = stat_params()$pivot_data
+            ),
+            rownames = FALSE
           )
+
         }
       })
 
